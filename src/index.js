@@ -1,59 +1,49 @@
-const express = require("express")
+const {v4: uuidv4} = require('uuid')
+
+const express = require('express')
 
 const app = express()
 
 app.use(express.json())
 
-app.get("/courses", (request, response) => {
-    const query = request.query
-    console.log(query)
+const customers = []
 
-    return response.json([
-        "Course Node",
-        "Course React",
-        "Course React Native",
-    ])
-})
+// register customer
+app.post('/account', (request, response) => {
+    const { cpf, name } = request.body
+    const id = uuidv4()
 
-app.post("/courses", (request, response) => {
-    const body = request.body
-    console.log(body)
+    // returns true or false
+    const cpfAlreadyExists = customers.some(
+        customer => customer.cpf === cpf
+    )
+
+    if(cpfAlreadyExists) {
+        return response.status(400).json({ error: 'Customer already exists' })
+    }
     
-    return response.json([
-        "Course Node",
-        "Course React",
-        "Course React Native",
-        "Course PHP",
-    ])
+    customers.push({
+        cpf,
+        name,
+        id,
+        statement: [],
+    })
+
+    return response.status(201).send()
 })
 
-app.put("/courses/:id", (request, response) => {
-    const { id } = request.params
-    console.log(id)
+// get customer's statement by cpf
+app.get('/statement/:cpf', (request, response) => {
+    const { cpf } = request.params
 
-    return response.json([
-        "Course Node",
-        "Course React",
-        "Course React Native",
-        "Course Laravel",
-    ])
+    // returns the whole object    
+    const customer = customers.find(
+        customer => customer.cpf === cpf
+    )
+
+    return response.json(customer.statement)
 })
 
-app.patch("/courses/:id", (request, response) => {
-    return response.json([
-        "Course Node",
-        "Course React.js",
-        "Course React Native",
-        "Course Laravel",
-    ])
-})
 
-app.delete("/courses/:id", (resquest, response) => {
-    return response.json([
-        "Course Node",
-        "Course React.js",
-        "Course React Native",
-    ])
-})
 
 app.listen(3333)

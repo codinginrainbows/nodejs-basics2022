@@ -23,7 +23,7 @@ function verifyIfCustomerCPFexists(request, response, next) {
     return next()
 }
 
-// register customer
+// register a customer
 app.post('/account', (request, response) => {
     const { cpf, name } = request.body
     const id = uuidv4()
@@ -54,6 +54,7 @@ app.get('/statement/', verifyIfCustomerCPFexists, (request, response) => {
     return response.json(customer.statement)
 })
 
+// make a deposit on customer account
 app.post('/deposit/', verifyIfCustomerCPFexists, (request, response) => {
     const { description, amount } = request.body
 

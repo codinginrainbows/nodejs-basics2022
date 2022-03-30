@@ -8,12 +8,27 @@ app.use(express.json())
 
 const customers = []
 
+function verifyIfCustomerCPFexists(request, response, next) {
+    const { cpf } = request.headers
+
+    // returns the whole object    
+    const customer = customers.find(customer => customer.cpf === cpf)
+
+    if(!customer) {
+        return response.json({ error: 'Customer not found' })
+    }
+
+    request.customer = customer
+
+    return next()
+}
+
 // register customer
 app.post('/account', (request, response) => {
     const { cpf, name } = request.body
     const id = uuidv4()
 
-    // returns true or false
+    // prevents duplicated customer - returns true or false
     const cpfAlreadyExists = customers.some(
         customer => customer.cpf === cpf
     )
@@ -33,13 +48,8 @@ app.post('/account', (request, response) => {
 })
 
 // get customer's statement by cpf
-app.get('/statement/:cpf', (request, response) => {
-    const { cpf } = request.params
-
-    // returns the whole object    
-    const customer = customers.find(
-        customer => customer.cpf === cpf
-    )
+app.get('/statement/', verifyIfCustomerCPFexists, (request, response) => {
+    const { customer } = request
 
     return response.json(customer.statement)
 })

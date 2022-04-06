@@ -87,7 +87,6 @@ app.post('/deposit/', verifyIfCustomerCPFexists, (request, response) => {
     return response.status(201).send()
 })
 
-
 // make a withdraw on customer account
 app.post('/withdraw/', verifyIfCustomerCPFexists, (request, response) => {
     const { amount } = request.body
@@ -122,5 +121,19 @@ app.get('/statement/date', verifyIfCustomerCPFexists, (request, response) => {
     return response.json(statement)
 })
 
+app.put('/account', verifyIfCustomerCPFexists, (request, response) => {
+    const { name } = request.body
+    const { customer } = request
+    
+    customer.name = name
+
+    return response.status(201).send()
+})
+
+app.get('/account', verifyIfCustomerCPFexists, (request, response) => {
+    const { customer } = request
+    
+    return response.json(customer)
+})
 
 app.listen(3333)

@@ -109,6 +109,7 @@ app.post('/withdraw/', verifyIfCustomerCPFexists, (request, response) => {
     return response.status(201).send()
 })
 
+// get customer's statement by date
 app.get('/statement/date', verifyIfCustomerCPFexists, (request, response) => {
     const { customer } = request
     const { date } = request.query
@@ -121,6 +122,7 @@ app.get('/statement/date', verifyIfCustomerCPFexists, (request, response) => {
     return response.json(statement)
 })
 
+// edit account details
 app.put('/account', verifyIfCustomerCPFexists, (request, response) => {
     const { name } = request.body
     const { customer } = request
@@ -130,10 +132,29 @@ app.put('/account', verifyIfCustomerCPFexists, (request, response) => {
     return response.status(201).send()
 })
 
+// get account
 app.get('/account', verifyIfCustomerCPFexists, (request, response) => {
     const { customer } = request
     
     return response.json(customer)
+})
+
+// delete an account
+app.delete('/account', verifyIfCustomerCPFexists, (request, response) => {
+    const { customer } = request
+
+    customers.splice(customer, 1)
+
+    return response.status(200).json(customers)
+})
+
+// get balance
+app.get('/balance', verifyIfCustomerCPFexists, (request, response) => {
+    const { customer } = request
+
+    const balance = getBalance(customer.statement)
+
+    return response.status(200).json(balance)
 })
 
 app.listen(3333)
